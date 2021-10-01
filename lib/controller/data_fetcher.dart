@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:math';
 
 import 'package:dio/dio.dart';
@@ -11,6 +10,10 @@ class DataFetcher {
   var random = Random();
   var unescape = HtmlUnescape();
 
+  static String stripHtmlIfNeeded(String text) {
+    return text.replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ' ');
+  }
+
   Future<QuoteResponse?> fetchQuote() async {
     int rand = random.nextInt(9);
     QuoteResponse? quoteResponse;
@@ -22,8 +25,10 @@ class DataFetcher {
         await _connectionHelper.getData(url, queryData: queryData);
     if (response.statusCode == 200) {
       quoteResponse = QuoteResponse(
-        body: unescape.convert(response.data[rand]["content"]["rendered"]),
-        author: unescape.convert(response.data[rand]["title"]["rendered"]),
+        body: stripHtmlIfNeeded(unescape
+            .convert(response.data[rand]["content"]["rendered"].toString())),
+        author: stripHtmlIfNeeded(unescape
+            .convert(response.data[rand]["title"]["rendered"].toString())),
       );
     }
     return quoteResponse;

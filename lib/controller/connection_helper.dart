@@ -9,7 +9,7 @@ class ConnectionHelper {
       Response<dynamic> response =
           await dio.get(url, queryParameters: queryData);
       return response;
-    } on DioError catch (e) {
+    } on DioError {
       rethrow;
     }
   }
